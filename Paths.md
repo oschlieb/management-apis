@@ -16,10 +16,10 @@ _Generated: Tue, 19 Jul 2016 14:37:34 +0000_
 ## /account/balance
 - `GET`: Get Balance
 
-## /account/secondaries
+## /account/secondaryaccounts
 - `GET`: List Secondary Accounts
 
-## /account/secondaries/{key}
+## /account/secondaryaccounts/{key}
 - `GET`: Get Secondary Account
 - `PUT`: Update Secondary Account
 

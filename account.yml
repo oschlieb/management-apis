@@ -1,0 +1,266 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+
+# swagger spec version
+swagger: '2.0'
+
+# documentation information
+info:
+  title: Nexmo Account API
+  description: Account management service
+  version: "1.0.0"
+
+# the domain of the service
+# host: api.nexmo.com
+
+# array of all schemes that your API supports
+schemes:
+  - https
+
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+
+# security configuration
+security:
+  - UserSecurity: []
+
+# paths to resources
+paths:
+
+  # account information
+  /accounts/{account_id}:
+    get:
+      description: Gets `Account` all information objects by specific account identifier.
+      parameters:
+        - $ref: "#/parameters/AccountId"
+      responses:
+        200:
+          description: Complete account information objects.
+          schema:
+            type: array
+            items:
+              - $ref: '#/definitions/AccountInformation'
+  #put: to do...
+
+  # account balance
+  /accounts/{account_id}/balance:
+    get:
+      description: Gets `Account` balance and credit limit if enabled.
+      parameters:
+        - $ref: "#/parameters/AccountId"
+      responses:
+        200:
+          description: Account balance and credit limit if enabled.
+          schema:
+            type: array
+            items:
+              - $ref: '#/definitions/AccountBalance'
+        400:
+          description: Invalid account_id.
+
+  # secondary accounts
+  /accounts/{account_id}/secondaryaccounts:
+    get:
+      description: Gets associated secindary accounts for this `Account`.
+      parameters:
+        - $ref: "#/parameters/AccountId"
+      responses:
+        200:
+          description: Account balance and credit limit if enabled.
+          schema:
+            type: array
+            items:
+              - $ref: '#/definitions/SecondaryAccounts'
+    #post: to do...
+
+  # account notifications
+  /accounts/{account_id}/notifications:
+    get:
+      description: Gets `Account` notifications object by specific account Id.
+      parameters:
+        - $ref: "#/parameters/AccountId"
+      responses:
+        200:
+          description: List of associated account notifications
+          schema:
+            type: array
+            items:
+              - $ref: '#/definitions/AccountNotifications'
+    #post: to do...
+
+  /accounts/{account_id}/notifications/{id}:
+    get:
+      description: Gets `Account` notifications object by specific notification Id.
+      parameters:
+        - $ref: "#/parameters/AccountId"
+        - $ref: "#/parameters/NotificationId"
+      responses:
+        200:
+          description: Notification details
+          schema:
+            type: array
+            items:
+              - $ref: '#/definitions/AccountNotificationsById'
+    #put: to do...
+
+
+  # account billing and payments
+  # /accounts/{account_id}/autoreload
+  # /accounts/{account_id}/instruments
+  # /accounts/{account_id}/instruments/{id}
+  # /accounts/{account_id}/transactions
+  # /accounts/{account_id}/transactions/
+  # /accounts/{account_id}/transactions/{id}
+
+  # account user management
+  # /accounts/{account_id}/users
+  # /accounts/{account_id}/users/{id}
+
+# reference global parameters
+parameters:
+
+  # account_id
+  AccountId:
+    name: account_id
+    in: path
+    description: Account identifier.
+    required: true
+    type: integer
+    format: int64
+
+  # notification_id
+  NotificationId:
+    name: id
+    in: path
+    description: Notification identifier.
+    required: true
+    type: integer
+    format: int64
+
+# security access definitions
+# https://apihandyman.io/writing-openapi-swagger-specification-tutorial-part-6-defining-security/
+securityDefinitions:
+  UserSecurity:
+    type: apiKey
+    in: header
+    name: simple_api_key
+
+# reference global definitions
+definitions:
+
+  # account information object
+  AccountInformation:
+    type: object
+    properties:
+      account_name:
+        type: string
+      AccountBalance:
+        $ref: '#/definitions/AccountBalance'
+      AccountUserProfile:
+        $ref: '#/definitions/AccountUserProfile'
+      AccountSecurity:
+        $ref: '#/definitions/AccountSecurity'
+      AccountAPISettings:
+        $ref: '#/definitions/AccountAPISettings'
+      SecondaryAccounts:
+        $ref: '#/definitions/SecondaryAccounts'
+
+  # account credit balance object
+  AccountBalance:
+    type: object
+    properties:
+      balance:
+        type: integer
+        format: int32
+        description: Account balance
+      credit_limit:
+        type: integer
+        format: int32
+        description: If enabled, account credit limit
+
+  # account user profile object
+  AccountUserProfile:
+    type: object
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      email_address:
+        type: string
+      im_skype:
+        type: string
+      phone_number:
+        type: integer
+      company_name:
+        type: string
+      company_address:
+        type: string
+      company_city:
+        type: string
+      company_state:
+        type: string
+      company_zip:
+        type: string
+      company_country:
+        type: string
+
+  # account security settings object
+  AccountSecurity:
+    type: object
+    properties:
+      sign_in_2FA:
+        type: boolean
+        description: If enabled, account users will need to verifu themselves on sign-in
+      ip_addresses:
+        type: ["string","null"]
+        description: List of whitelisted IP addresses to access this account
+
+  # account API setttings
+  AccountAPISettings:
+    type: object
+    properties:
+      api_key:
+        type: string
+      http_method:
+        type: string
+      webhook_inbound_sms: #moCallBackURL
+        type: string
+      webhook_dlr: #drCallBackURL
+        type: string
+
+  # secondary accounts associated with this account
+  SecondaryAccounts:
+    type: object
+    properties:
+      secondary_account_names:
+        type: ["string","null"] # valid usage?
+      secondary_account_api_keys:
+        type: ["string","null"]
+
+  # secondary accounts associated with this account
+  AccountNotifications:
+    type: object
+    properties:
+      balance_notfication:
+        type: ["string","null"] # [id, enabled, threshold, email_address]
+      finance_notfication:
+        type: ["string","null"] # [id, enabled, email_address]
+      pricing_notfication:
+        type: ["string","null"] # [id, enabled, email_address]
+
+  # secondary accounts associated with this account
+  AccountNotificationsById:
+    type: object
+    properties:
+      name:
+        type: string
+      enabled:
+        type: boolean
+      threshold:
+        type: integer
+      email_addresses:
+        type: ["string","null"]
